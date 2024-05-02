@@ -9,8 +9,8 @@ import { db } from '../firebase-config';
 
 const TaskManager = () => {
     const [tasks, setTasks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true); 
+    const [error, setError] = useState(null); 
     const [showModal, setShowModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalDescription, setModalDescription] = useState('');
@@ -33,14 +33,14 @@ const TaskManager = () => {
                 updatedAt: doc.data().updatedAt ? new Date(doc.data().updatedAt.seconds * 1000) : null,
             }));
             setTasks(tasksData);
-            setLoading(false);
+            setLoading(false); // Set loading to false after data is fetched
         }, (error) => {
             console.error("Failed to fetch tasks:", error);
             setError(error);
             setLoading(false);
         });
         return () => unsubscribe();
-    }, [db]);
+    }, []);
 
     if (loading) return <div>Loading tasks...</div>;
     if (error) return <div>Error loading tasks: {error.message}</div>;
@@ -125,6 +125,7 @@ const TaskManager = () => {
     };
 
     const statusCategories = ['Waiting', 'In Progress', 'Completed', 'Failed'];
+    const accordionId = "tasksAccordion";
     const filteredTasks = tasks.filter(task => task.isArchived === showArchived);
 
     return (
@@ -139,10 +140,11 @@ const TaskManager = () => {
                     <Button variant="primary" onClick={handleAddTaskClick}>Add Task</Button>
                 </div>
             </div>
+            <div className="accordion" id={accordionId}></div>
             {statusCategories.map(status => (
-                <Accordion defaultActiveKey="0" key={status}>
+                <Accordion defaultActiveKey="0" key={status} className="custom-accordion">
                     <Accordion.Item eventKey={status}>
-                        <Accordion.Header>{status}</Accordion.Header>
+                        <Accordion.Header >{status}</Accordion.Header>
                         <Accordion.Body>
                             <Accordion>
                                 {Object.entries(filteredTasks.filter(task => task.status === status).reduce((acc, task) => {

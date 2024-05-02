@@ -1,6 +1,6 @@
 body, html {
   overflow-x: hidden;
-  /* overflow-y: visible; Ensures vertical scrolling is possible */
+  /* overflow-y: visible; vertical scrolling is possible */
   scroll-behavior: smooth;
   margin: 0;
   height: 100%;
@@ -24,7 +24,7 @@ body, html {
 }
 
 .card.bg-dark {
-  background-color: rgba(0, 0, 0, 0.55); /* Adjust opacity as needed */
+  background-color: rgba(0, 0, 0, 0.55); 
 }
 
 .text-light {
@@ -36,11 +36,11 @@ body, html {
 }
 
 .form-control {
-  margin-bottom: 15px; /* Adjust spacing */
+  margin-bottom: 15px; 
 }
 
 .login-box, .register-box {
-  background: rgba(0, 0, 0, 0.55); /* Semi-transparent */
+  background: rgba(0, 0, 0, 0.55); 
   padding: 20px;
   border-radius: 5px;
   color: white;
@@ -59,7 +59,7 @@ body, html {
   
 }
 .clickable-image:hover {
-  transform: scale(1.2); /* Adjust scale value to your liking */
+  transform: scale(1.2); 
   transition: transform 0.2s;
   cursor: pointer;
 }
@@ -68,23 +68,23 @@ body, html {
 }
 .fixed-bottom-left {
   position: fixed;
-  bottom: 20px; /* Adjust based on your footer height */
-  left: 20px; /* Adjust based on preference */
-  z-index: 999; /* Ensure it's above other content */
+  bottom: 20px; 
+  left: 20px; 
+  z-index: 999; 
 }
 .offcanvas-start {
   position: fixed;
-  height: 100%; /* Full height */
-  width: 250px; /* Sidebar width */
-  top: 0; /* Align top */
-  left: 0; /* Align left */
-  overflow-y: auto; /* Allow scrolling within the sidebar */
-  z-index: 1050; /* High z-index to overlay content */
+  height: 100%; 
+  width: 250px; 
+  top: 0; 
+  left: 0; 
+  overflow-y: auto; 
+  z-index: 1050; 
 }
 .burger-button {
   background: transparent;
   border: none;
-  color: #fff; /* Adjust color based on your theme */
+  color: #fff; 
   padding: 10px;
   font-size: 20px;
 }
@@ -97,3 +97,12 @@ body, html {
   left: 20px;       
   z-index: 1050;    
 }
+.custom-accordion .accordion-button:not(.collapsed) {
+  background-color: #007bff; 
+  color: white; 
+}
+
+.custom-accordion .accordion-button:hover {
+  background-color: #0056b3; 
+}
+

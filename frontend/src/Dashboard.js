@@ -8,6 +8,8 @@ import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import 'admin-lte/dist/css/adminlte.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TaskManager from './components/Tasks';
+
+
 function Dashboard() {
     // Initialize states
     const [tenantsCount, setTenantsCount] = useState(0);
@@ -61,9 +63,6 @@ function Dashboard() {
                     };
                 });
                 setFinancials(formattedFinancials);
-
-
-
 
 
                 const recentActivitiesQuery = query(collection(db, "Tasks"), orderBy("timestamp", "desc"), limit(5));

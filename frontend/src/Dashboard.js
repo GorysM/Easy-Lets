@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { db } from './firebase-config';
 import ScrollToTop from './components/ScrollToTop';
-import { collection, getDocs, query, where, orderBy, limit, getDoc, doc  } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, limit, getDoc, doc } from 'firebase/firestore';
 import { PieChart, Pie, Cell, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import DashboardSidebar from './components/DashboardSidebar';
-import { Container, Row, Col, Card, Spinner, Alert, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 import 'admin-lte/dist/css/adminlte.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TaskManager from './components/Tasks';
@@ -17,7 +17,7 @@ function Dashboard() {
     const [financials, setFinancials] = useState([]);
     const [recentActivities, setRecentActivities] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(''); 
+    const [error, setError] = useState('');
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
     useEffect(() => {
@@ -28,9 +28,17 @@ function Dashboard() {
                 setPropertiesCount(propertiesSnapshot.docs.length);
                 const propertyAddressMap = {};
                 propertiesSnapshot.forEach(doc => {
-                    propertyAddressMap[doc.id] = doc.data().Address; // Adjust "Address" if the field is named differently
+                    propertyAddressMap[doc.id] = doc.data().Address;
                 });
+                // Calculate the date two months from now
+                const today = new Date();
+                const twoMonthsLater = new Date(today.getFullYear(), today.getMonth() + 2, today.getDate());
 
+                // Query for leases expiring within the next two months
+                const leaseQuery = query(collection(db, "Leases"),
+                    where("endDate", ">=", today),
+                    where("endDate", "<=", twoMonthsLater) //end date is within the next two months
+                );
                 const tenantsSnapshot = await getDocs(collection(db, "Tenants"));
                 setTenantsCount(tenantsSnapshot.docs.length);
 
@@ -46,7 +54,7 @@ function Dashboard() {
                     const data = doc.data();
                     return {
                         propertyAddress: propertyAddressMap[doc.id] || 'Unknown',
-                        totalIncome: data.totalIncome || 0, // Replace with your actual field names
+                        totalIncome: data.totalIncome || 0,
                         remainingUnpaidExpenses: data.remainingUnpaidExpenses || 0,
                         totalPaidExpenses: data.totalPaidExpenses || 0,
                         netIncome: (data.totalIncome || 0) - (data.totalPaidExpenses || 0)
@@ -62,8 +70,7 @@ function Dashboard() {
                 const activitiesSnapshot = await getDocs(recentActivitiesQuery);
                 setRecentActivities(activitiesSnapshot.docs.map(activityDoc => ({ id: activityDoc.id, ...activityDoc.data() })));
 
-                const today = new Date();
-                const leaseExpirationsSnapshot = await getDocs(query(collection(db, "Leases"), where("endDate", ">=", today)));
+                const leaseExpirationsSnapshot = await getDocs(leaseQuery);
                 const leaseExpirationsData = await Promise.all(leaseExpirationsSnapshot.docs.map(async (leaseDoc) => {
                     const leaseData = leaseDoc.data();
                     let propertyAddress = 'Unknown';
@@ -88,9 +95,8 @@ function Dashboard() {
 
         fetchData();
     }, []);
-
     const validMaintenanceStats = maintenanceStats.filter(stat => !isNaN(stat.value));
-   
+
 
     return (
         <div className="wrapper">
@@ -104,7 +110,6 @@ function Dashboard() {
                                 <Card.Header><h3>Properties Overview</h3></Card.Header>
                                 <Card.Body>
                                     <Card.Text>Total Properties: {propertiesCount}</Card.Text>
-                                    {/* Additional details */}
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -115,27 +120,26 @@ function Dashboard() {
                                 <Card.Header><h3>Tenant Overview</h3></Card.Header>
                                 <Card.Body>
                                     <Card.Text>Total Tenants: {tenantsCount}</Card.Text>
-                                    {/* Additional tenant stats */}
                                 </Card.Body>
                             </Card>
                         </Col>
 
                         {/* Lease Expirations */}
                         <Col md={6} lg={4}>
-    <Card className="mb-3">
-        <Card.Header><h3>Lease Expirations</h3></Card.Header>
-        <Card.Body>
-            <ListGroup variant="flush">
-                {leaseExpirations.map((lease, index) => (
-                    <ListGroup.Item key={index}>
-                        {lease.propertyAddress} - Expires on 
-                        <span className="badge bg-danger ms-2">{lease.endDate}</span>
-                    </ListGroup.Item>
-                ))}
-            </ListGroup>
-        </Card.Body>
-    </Card>
-</Col>
+                            <Card className="mb-3">
+                                <Card.Header><h3>Lease Expirations</h3></Card.Header>
+                                <Card.Body>
+                                    <ListGroup variant="flush">
+                                        {leaseExpirations.map((lease, index) => (
+                                            <ListGroup.Item key={index}>
+                                                {lease.propertyAddress} - Expires on
+                                                <span className="badge bg-danger ms-2">{lease.endDate}</span>
+                                            </ListGroup.Item>
+                                        ))}
+                                    </ListGroup>
+                                </Card.Body>
+                            </Card>
+                        </Col>
 
 
 
@@ -173,7 +177,7 @@ function Dashboard() {
                                     <ResponsiveContainer width="100%" height={300}>
                                         <BarChart data={financials}>
                                             <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="propertyAddress"/>
+                                            <XAxis dataKey="propertyAddress" />
                                             <YAxis />
                                             <Tooltip />
                                             <Legend />
@@ -185,24 +189,24 @@ function Dashboard() {
                                     </ResponsiveContainer>
                                 </Card.Body>
                             </Card>
-                        </Col>      
-                        {/* Recent Activities */}
+                        </Col>
+                        {/* To do task list */}
                         <Col md={12} lg={8}>
                             <Card className="mb-3 text-center">
                                 <Card.Header><h3>To-Do Task List</h3></Card.Header>
                                 <Card.Body>
-                                    <TaskManager/>
-                               
-</Card.Body>
-</Card>
-</Col>
+                                    <TaskManager />
+
+                                </Card.Body>
+                            </Card>
+                        </Col>
                     </Row>
                     <ScrollToTop />
                 </Container>
             </div>
         </div>
     );
-    
+
 }
 
 export default Dashboard;

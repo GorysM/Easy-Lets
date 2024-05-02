@@ -68,7 +68,7 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
             const leasesList = querySnapshot.docs.map(async docSnapshot => {
                 const leaseData = docSnapshot.data();
                 leaseData.id = docSnapshot.id;
-                // Check if startDate and endDate are Firestore timestamps and convert them
+                // Check if startDate and endDate are Firestore timestamps and convert it; otherwise, leave as it is
                 leaseData.startDate = leaseData.startDate?.toDate ? leaseData.startDate.toDate().toISOString().split('T')[0] : leaseData.startDate;
                 leaseData.endDate = leaseData.endDate?.toDate ? leaseData.endDate.toDate().toISOString().split('T')[0] : leaseData.endDate;
 
@@ -93,8 +93,10 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
     }, [show, tenantId, db]);
 
     useEffect(() => {
+        // This effect runs only when the modal is opened for a new tenant (example- when the tenantId is null)
         if (show && !tenantId) {
             setTenantDetails(initialState);  // Reset tenant details to initial state
+    
             const fetchProperties = async () => {
                 const querySnapshot = await getDocs(collection(db, "Property"));
                 const propertyList = querySnapshot.docs.map(docSnapshot => ({
@@ -103,7 +105,7 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
                 }));
                 setProperties(propertyList);
             };
-                fetchProperties();
+            fetchProperties();
     
             // Initialize with one empty lease to allow users to input lease details immediately
             setLeases([{
@@ -132,7 +134,7 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
             PropertyUserId: tenantId || 'new', 
         };
     
-        // adding an empty structure for a new lease
+        //adding an empty structure for a new lease
         setLeases(prevLeases => [...prevLeases, newLease]);
     };
     
@@ -148,25 +150,26 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
         const { name, value } = e.target;
         if (name === 'rent') {
             // Update rent in tenantDetails
-            setTenantDetails({ ...tenantDetails, [name]: value || '' }); 
+            setTenantDetails({ ...tenantDetails, [name]: value || '' }); // Ensure value is never undefined
             // Fetch property details to update rent in Property collection
             const propertyRef = doc(db, "Property", tenantDetails.propertyId);
             const propertyDoc = await getDoc(propertyRef);
             if (propertyDoc.exists()) {
                 const propertyData = propertyDoc.data();
                 // Update rent in Property collection
-                await updateDoc(propertyRef, { ...propertyData, Price: value || '' }); 
+                await updateDoc(propertyRef, { ...propertyData, Price: value || '' }); // Ensure value is never undefined
             }
 
             // Update rent in leases
             const updatedLeases = leases.map(lease => {
                 if (lease.propertyId === tenantDetails.propertyId) {
-                    return { ...lease, rent: value || '' }; 
+                    return { ...lease, rent: value || '' }; // Ensure value is never undefined
                 }
                 return lease;
             });
             setLeases(updatedLeases);
         } else {
+            // Otherwise, update other fields as usual
             setTenantDetails({ ...tenantDetails, [name]: value });
         }
     };
@@ -180,9 +183,11 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
             try {
                 await deleteDoc(doc(db, "Leases", leaseToDelete.id));
             } catch (error) {
-                return; 
+                return; // Stop the function if there's an error
             }
         }
+        
+        // Remove the lease entry from the local state
         const updatedLeases = [...leases];
         updatedLeases.splice(index, 1);
         setLeases(updatedLeases);
@@ -249,7 +254,7 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
             }
     
             refreshTenants(); // Refresh tenant list to reflect changes
-            handleClose();
+            handleClose(); // Close the modal
             setLeases([]); // Clear the leases array to avoid data retention
         } catch (error) {
             console.error("Error saving tenant details:", error);
@@ -342,6 +347,7 @@ const TenantModal = ({ show, handleClose, db, tenantId = null, refreshTenants })
                     {/* Leases Display */}
                     {leases.map((lease, index) => (
                         <div key={index} style={{ borderBottom: '1px solid #ddd', paddingBottom: '10px', marginBottom: '10px' }}>
+                            {/* Lease details fields */}
                             <Form.Group as={Row} className="mb-3">
                                 <Form.Label column sm={4}>Last Updated:</Form.Label>
                                 <Col sm={8}>

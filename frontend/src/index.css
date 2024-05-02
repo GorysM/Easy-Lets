@@ -1,0 +1,99 @@
+body, html {
+  overflow-x: hidden;
+  /* overflow-y: visible; Ensures vertical scrolling is possible */
+  scroll-behavior: smooth;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.home-container {
+  background-image: url('/public/Background.png'); 
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card.bg-dark {
+  background-color: rgba(0, 0, 0, 0.55); /* Adjust opacity as needed */
+}
+
+.text-light {
+  color: #fff;
+}
+
+.btn-primary {
+  width: 50%;
+}
+
+.form-control {
+  margin-bottom: 15px; /* Adjust spacing */
+}
+
+.login-box, .register-box {
+  background: rgba(0, 0, 0, 0.55); /* Semi-transparent */
+  padding: 20px;
+  border-radius: 5px;
+  color: white;
+  max-width: 400px; 
+  width: 100%;
+}
+
+.logo-container {
+  background-image: url('/public/logo.png');
+  height: 190px; 
+  width: 100px; 
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  margin-bottom: 20%;
+  
+}
+.clickable-image:hover {
+  transform: scale(1.2); /* Adjust scale value to your liking */
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.card-text, .card-title {
+    text-align: center;
+}
+.fixed-bottom-left {
+  position: fixed;
+  bottom: 20px; /* Adjust based on your footer height */
+  left: 20px; /* Adjust based on preference */
+  z-index: 999; /* Ensure it's above other content */
+}
+.offcanvas-start {
+  position: fixed;
+  height: 100%; /* Full height */
+  width: 250px; /* Sidebar width */
+  top: 0; /* Align top */
+  left: 0; /* Align left */
+  overflow-y: auto; /* Allow scrolling within the sidebar */
+  z-index: 1050; /* High z-index to overlay content */
+}
+.burger-button {
+  background: transparent;
+  border: none;
+  color: #fff; /* Adjust color based on your theme */
+  padding: 10px;
+  font-size: 20px;
+}
+
+.burger-button:focus {
+  outline: none;
+}
+.burger-button {
+  top: 20px;        
+  left: 20px;       
+  z-index: 1050;    
+}
